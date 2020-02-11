@@ -12,6 +12,8 @@ Now we can say on top of HTTP/2 features, gRPC provides:
 - Deadline/timeout and cancellation: Both client and server can define a timeout. Furthermore, client can abort an operation earlier if necessary. 
 - Security
 
+gRPC uses a binary based format called [*Protocol Buffer*](https://developers.google.com/protocol-buffers/docs/encoding).
+
 ## Creating the Server
 Dotnet Core and Visual Studio both have a template to create a gRPC server, but in this tutorial, I am going to create it from scratch. In addition, we are going to create the client.
 
@@ -74,14 +76,16 @@ Note 1: The first line is mandatory.
 
 Note 2: the namespace would be used in the generated C# code. 
 
-Note 3: the values in front of the a, b and c are their order not their default. They should be positive. The reason is *proto* format, unlike XML and json doesn't serialize the property names and instead works based on the data in order.
+Note 3: the values in front of the a, b and c are their field number for *proto* format. They should be positive and unique in that *message* object. The reason is *proto* format, unlike XML and json doesn't serialize the property names and instead works based on the field number.
+
+Note 4: There would be one class created for each message (*AddRequest* and *AddResponse*)
 
 ### Compiling protos
 You need to first Download the *protoc* for your operating system from their [release repository](https://github.com/protocolbuffers/protobuf/releases).
 After extracting you would find the *protoc* in the bin folder.  
 
 ```powershell
-protoc.exe --csharp_out=.\bin\Debug\netcoreapp3.1 --csharp_opt=,base_namespace=Server .\Protos\calc.proto
+protoc.exe --csharp_out=.\bin\Debug\netcoreapp3.1 .\Protos\calc.proto
 dotnet build .
 ```
 
@@ -132,7 +136,7 @@ option csharp_namespace = "Client";
 
 Now create the proxy files using *protoc*.
 ```powershell
-protoc.exe --csharp_out=.\bin\Debug\netcoreapp3.1 --csharp_opt=,base_namespace=Client .\Protos\calc.proto
+protoc.exe --csharp_out=.\bin\Debug\netcoreapp3.1 .\Protos\calc.proto
 
 ```
 In the program edit the *main* method to:
